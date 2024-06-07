@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\StuentWebAPI.props" />
+</Project>
