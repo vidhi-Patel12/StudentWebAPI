@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Castle.Components.DictionaryAdapter;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using KeyAttribute = System.ComponentModel.DataAnnotations.KeyAttribute;
 
 namespace StuentWebAPI.Model
 {
     public class Student
     {
-        [key]
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get;  set; }
         [Required(ErrorMessage = "FirstName is required")]

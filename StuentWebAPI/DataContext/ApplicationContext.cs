@@ -9,7 +9,7 @@ namespace StuentWebAPI.DataContext
         public ApplicationContext(DbContextOptions options): base(options)
         {
         }
-
-        public DbSet<Student> Student { get; set; }
+      
+        public  DbSet<Student> Student { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StuentWebAPI.DataContext;
+using StuentWebAPI.Interface;
 using StuentWebAPI.Model;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,9 @@ namespace StudentWebAPI.Controllers
     {
         private readonly ApplicationContext _context;
 
-        public StudentController(ApplicationContext context)
+        public StudentController(IStudent @object, IWebHostEnvironment object1, ApplicationContext context)
         {
+          
             _context = context;
         }
 
