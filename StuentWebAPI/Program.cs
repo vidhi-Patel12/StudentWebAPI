@@ -1,22 +1,20 @@
-using FluentAssertions.Common;
-using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Converters;
 using StuentWebAPI.DataContext;
-using System.Globalization;
-using System.Web.Http;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder();
 
 
-builder.Services.AddDbContext<ApplicationContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("Connection")));
+builder.Services.AddDbContext<ApplicationContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Connection")));
 
 builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 builder.Services.AddCors(options =>
 {
@@ -29,22 +27,24 @@ builder.Services.AddCors(options =>
 });
 
 
+builder.Services.AddLogging();
+
+
 var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
-//{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-//}
-
+app.UseHttpsRedirection();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseRouting();
 
 app.UseCors("MyPolicyToAllowAnyOne");
 
+
 app.MapControllers();
+
 
 app.Run();
