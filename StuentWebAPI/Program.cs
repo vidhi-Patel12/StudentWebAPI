@@ -4,12 +4,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using StuentWebAPI.DataContext;
+using FluentAssertions.Common;
+using StuentWebAPI.Interface;
+using EmployeeWebAPI.Repository;
 
 var builder = WebApplication.CreateBuilder();
 
 
 builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Connection")));
+
+builder.Services.AddTransient<IStudent, StudentRepo>();
 
 builder.Services.AddControllers();
 
@@ -27,7 +32,7 @@ builder.Services.AddCors(options =>
 });
 
 
-builder.Services.AddLogging();
+//builder.Services.AddLogging();
 
 
 var app = builder.Build();

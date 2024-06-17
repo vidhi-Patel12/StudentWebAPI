@@ -13,9 +13,9 @@ namespace StuentWebAPI.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get;  set; }
         [Required(ErrorMessage = "FirstName is required")]
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
         [Required(ErrorMessage = "LastName is required")]
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
         [Required(ErrorMessage = "Contact number is required")]
         [Range(1000000000, 9999999999, ErrorMessage = "ContactNo must be a 10-digit number")] 
@@ -24,17 +24,17 @@ namespace StuentWebAPI.Model
 
         [Required, MinLength(1), DataType(DataType.EmailAddress), EmailAddress, MaxLength(50), Display(Name = "Email")]
         [RegularExpression(@"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$", ErrorMessage = "Please enter a valid e-mail adress")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [Required(ErrorMessage = "Gender is required")]
-        public string Gender { get; set; }
+        public string? Gender { get; set; }
 
         [Required(ErrorMessage = "Date of birth is required")]
         [DataType(DataType.Date)]
-        public string DateOfBirth { get; set; }
+        public string? DateOfBirth { get; set; }
 
         [Required(ErrorMessage = "Address is required")]
-        public string Address { get; set; }
+        public string? Address { get; set; }
 
         [Required(ErrorMessage = "Pincode is required")]
         [Range(100000, 999999, ErrorMessage = "Pincode must be a 6-digit number")]

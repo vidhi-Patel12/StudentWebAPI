@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,10 +19,15 @@ namespace StudentWebAPI.Controllers
     public class StudentController : ControllerBase
     {
         private readonly ApplicationContext _context;
+       private readonly IStudent _IStudent;
+        private readonly IWebHostEnvironment WebHostEnvironment;
+        private readonly ApplicationContext _dbContext;
+        private IStudent @object;
 
-        public StudentController(IStudent @object, IWebHostEnvironment object1, ApplicationContext context)
+        public StudentController(IStudent IStudent, IWebHostEnvironment webHostEnvironment, ApplicationContext context)
         {
-          
+            _IStudent = IStudent;
+            WebHostEnvironment = webHostEnvironment;
             _context = context;
         }
 

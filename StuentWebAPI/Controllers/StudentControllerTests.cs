@@ -45,51 +45,51 @@ namespace StudentWebAPI.Tests
             }
         }
 
-        [TestMethod]
-        public async Task PostValidStudent_ReturnsOkResult()
-        {
-            // Arrange
-            var options = new DbContextOptionsBuilder<ApplicationContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
-                .Options;
-
-            using (var context = new ApplicationContext(options))
+            [TestMethod]
+            public async Task PostValidStudent_ReturnsOkResult()
             {
-                // Ensure context is properly initialized and not null
-                if (context == null)
+                // Arrange
+                var options = new DbContextOptionsBuilder<ApplicationContext>()
+                    .UseInMemoryDatabase(databaseName: "TestDatabase")
+                    .Options;
+
+                using (var context = new ApplicationContext(options))
                 {
-                    // Handle the case where context is not properly initialized
-                    Assert.Fail("Failed to initialize database context");
+                    // Ensure context is properly initialized and not null
+                    if (context == null)
+                    {
+                        // Handle the case where context is not properly initialized
+                        Assert.Fail("Failed to initialize database context");
+                    }
+
+                    var mockStudent = new Mock<IStudent>(); // Assuming IStudent is an interface for Student model
+                    var webHostEnvironment = new Mock<IWebHostEnvironment>();
+                    var controller = new StudentController(mockStudent.Object, webHostEnvironment.Object, context);
+
+                    var student = new Student
+                    {
+                        FirstName = "kinjal",
+                        LastName = "Doe",
+                        ContactNo = 1123457896,
+                        Email = "john.doe@example.com",
+                        Gender = "Male",
+                        DateOfBirth = "2024-10-06",
+                        Address = "sdffrggdfgtgd",
+                        Pincode = 124578
+                    };
+
+                    // Act
+                    var result = await controller.PostStudent(student);
+
+                    // Assert
+                    Assert.IsNotNull(result);
+                    var okResult = result.Result as OkObjectResult;
+                    Assert.IsNotNull(okResult);
+
+                    var message = okResult.Value.GetType().GetProperty("Message").GetValue(okResult.Value) as string;
+                    Assert.AreEqual("Student successfully added.", message);
                 }
-
-                var mockStudent = new Mock<IStudent>(); // Assuming IStudent is an interface for Student model
-                var webHostEnvironment = new Mock<IWebHostEnvironment>();
-                var controller = new StudentController(mockStudent.Object, webHostEnvironment.Object, context);
-
-                var student = new Student
-                {
-                    FirstName = "John",
-                    LastName = "Doe",
-                    ContactNo = 1123457896,
-                    Email = "john.doe@example.com",
-                    Gender = "Male",
-                    DateOfBirth = "2024-10-06",
-                    Address = "sdffrggdfgtgd",
-                    Pincode = 124578
-                };
-
-                // Act
-                var result = await controller.PostStudent(student);
-
-                // Assert
-                Assert.IsNotNull(result);
-                var okResult = result.Result as OkObjectResult;
-                Assert.IsNotNull(okResult);
-
-                var message = okResult.Value.GetType().GetProperty("Message").GetValue(okResult.Value) as string;
-                Assert.AreEqual("Student successfully added.", message);
             }
-        }
 
         [TestMethod]
         public async Task PutValidStudentReturnsOkResult()
