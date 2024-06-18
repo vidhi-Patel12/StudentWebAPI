@@ -14,7 +14,8 @@ using System.Threading.Tasks;
 namespace StudentWebAPI.Controllers
 {
     [ApiController]
-    [Route("api/[action]")]
+    //[Route("api/[action]")]
+    [Route("api/[controller]/[action]")]
 
     public class StudentController : ControllerBase
     {
@@ -62,7 +63,7 @@ namespace StudentWebAPI.Controllers
 
         // POST: api/PostStudent
         [HttpPost]
-        public async Task<ActionResult<Student>> PostStudent(Student student)
+        public async Task<ActionResult<Student>> PostStudent([FromBody] Student student)
         {
             _context.Student.Add(student);
             await _context.SaveChangesAsync();

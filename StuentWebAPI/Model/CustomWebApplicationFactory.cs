@@ -10,7 +10,7 @@ namespace StudentWebAPI
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.UseStartup<TStartUp>(); 
+            builder.UseStartup<TStartUp>();
 
             builder.ConfigureServices(services =>
             {
@@ -24,6 +24,7 @@ namespace StudentWebAPI
                     options.UseInternalServiceProvider(serviceProvider);
                 });
             });
+            builder.UseEnvironment("Testing");
         }
     }
 }

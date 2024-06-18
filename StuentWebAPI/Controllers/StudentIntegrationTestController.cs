@@ -1,200 +1,87 @@
-﻿using com.sun.security.ntlm;
-using com.sun.xml.@internal.bind.v2.model.core;
-using FluentAssertions.Common;
-using Microsoft.AspNetCore.Mvc;
+﻿using com.sun.xml.@internal.ws.client;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
-using Moq;
 using Newtonsoft.Json;
-using StudentWebAPI.Controllers;
-using StuentWebAPI.DataContext;
-using StuentWebAPI.Interface;
+using Newtonsoft.Json.Linq;
 using StuentWebAPI.Model;
-using System.Data.Entity;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace StudentWebAPI.IntegrationTests
 {
-    public class StudentIntegrationTest
+    public class StudentIntegrationTest : IClassFixture<StudentTestFactory>
     {
-        private readonly WebApplicationFactory<Program> _factory;
+        private readonly HttpClient _client;
 
-        public StudentIntegrationTest()
+        public StudentIntegrationTest(StudentTestFactory factory)
         {
-            _factory = new WebApplicationFactory<Program>();
+            _client = factory.CreateClient();
         }
 
         [Fact]
-        public async Task Post_ValidStudent_ReturnsOkResult()
+        public async Task PostValidStudent_ReturnsOkResult()
         {
-            // Arrange
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices(services =>
-                {
-                    services.AddDbContext<ApplicationContext>(options =>
-                    {
-                        options.UseInMemoryDatabase("TestDatabase");
-                    });
-                });
-            }).CreateClient();
-
             var student = new Student
             {
-                FirstName = "yami",
-                LastName = "patel",
-                ContactNo = 8523457896,
-                Email = "yami.patel@example.com",
+                FirstName = "megha",
+                LastName = "maheta",
+                ContactNo = 9632501478,
+                Email = "sneha.maheta@example.com",
                 Gender = "female",
-                DateOfBirth = "2002-11-06",
-                Address = "qwertyu",
-                Pincode = 96345
+                DateOfBirth = "2000-01-07",
+                Address = "awawaawawaww",
+                Pincode = 123123
             };
 
-            // Act (add student to database)
-            using (var scope = _factory.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-
-                context.Student.Add(student);
-                await context.SaveChangesAsync();
-            }
-
-            // Act (simulate HTTP request)
-            var response = await client.PostAsJsonAsync("/api/Student/PostStudent", student);
-          
-
-            // Assert
-            //using (var scope = _factory.Services.CreateScope())
-            //{
-            //    var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-
-            //    // Ensure context is using the in-memory database
-            //    var insertedStudent = await context.Student.FirstOrDefaultAsync(s => s.Email == "yog.patel@example.com");
-
-            //    Assert.NotNull(insertedStudent);
-            //    Assert.Equal(student.FirstName, insertedStudent.FirstName);
-            //    Assert.Equal(student.LastName, insertedStudent.LastName);
-            //}
-        }
-
-
-
-        [Fact]
-        public async Task GetStudentById_ReturnsStudent()
-        {
-            var client = _factory.CreateClient();
+            var url = "/api/Student/PostStudent"; // Use relative URL
 
             // Act
-            var response = await client.GetAsync("/api/Student/GetStudentById/1057");
+            var response = await _client.PostAsJsonAsync(url, student); 
+            response.EnsureSuccessStatusCode();
 
-            // Additional assertions can be added after successful response check
-            var responseData = await response.Content.ReadAsAsync<Student>();
 
-            if (responseData != null)
-            {
-                Assert.Equal(1009, responseData.Id);
-                Assert.Equal("yog", responseData.FirstName);
-            }
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("OK", response.ReasonPhrase);
+           
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var jsonResponse = JObject.Parse(responseContent); 
+
+            // Assert against the JSON object
+            Assert.True(jsonResponse.ContainsKey("message")); 
+            Assert.Equal("Student successfully added.", (string)jsonResponse["message"]);
+
+            Assert.True(jsonResponse.ContainsKey("firstName")); 
+            Assert.Equal(student.FirstName, (string)jsonResponse["firstName"]);
 
         }
 
+        //var responseContent = await response.Content.ReadAsStringAsync();
 
-        [Fact]
-        public async Task Put_ExistingStudent_ReturnsOkResult()
-        {
-            // Arrange
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices(services =>
-                {
-                    services.AddDbContext<ApplicationContext>(options =>
-                    {
-                        options.UseInMemoryDatabase("TestDatabase");
-                    });
-                });
-            }).CreateClient();
+        // var responseObject = JsonSerializer.Deserialize<StudentApiResponse>(responseContent);
 
-            // Prepare the updated student data
-            var updatedStudent = new Student
-            {
-                Id = 1059,
-                FirstName = "UpdatedJohn",
-                LastName = "UpdatedDoe",
-                ContactNo = 9988776655,
-                Email = "updated.john.doe@example.com",
-                Gender = "Male",
-                DateOfBirth = "1990-01-01",
-                Address = "456 Elm St",
-                Pincode = 54321
-            };
-
-            using (var scope = _factory.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-
-                context.Student.Update(updatedStudent);
-                await context.SaveChangesAsync();
-            }
-            var response = await client.PutAsJsonAsync($"/api/Student/PutStudent/1059", updatedStudent);
-        }
-
-
-        [Fact]
-        public async Task DeleteStudent_ExistingId_DeletesStudent()
-        {
-
-            var client = _factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices(services =>
-                {
-                    services.AddDbContext<ApplicationContext>(options =>
-                    {
-                        options.UseInMemoryDatabase("TestDatabase");
-                    });
-                });
-            }).CreateClient();
-
-            var student = new Student
-            {
-              Id =1055
-            };
-
-            using (var scope = _factory.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-
-                context.Student.Remove(student);
-                await context.SaveChangesAsync();
-            }
-
-            // Act (simulate HTTP request)
-            var response = await client.DeleteAsync("/api/Student/DeleteStudent/1055");
-
-
-
-            //  // Arrange
-            //  var client = _factory.CreateClient();
-            //  // Act
-            //  var response = await client.DeleteAsync("/api/Student/DeleteStudent/1009");
-            //// Verify that the response content does not contain the message "Student successfully deleted."
-            //  var content = await response.Content.ReadAsStringAsync();
-            //  Assert.DoesNotContain("Student successfully deleted.", content);
-        }
-
-
+        //    Assert.NotNull(responseObject);
+        //    Assert.Equal("Student successfully added.", responseObject.Message);
+        //    Assert.Equal(student.FirstName, responseObject.Student.FirstName);
+        //    Assert.Equal(student.LastName, responseObject.Student.LastName);
+        //    Assert.Equal(student.Email, responseObject.Student.Email);
+        //    Assert.Equal(student.Gender, responseObject.Student.Gender);
+        //    Assert.Equal(student.DateOfBirth, responseObject.Student.DateOfBirth);
+        //    Assert.Equal(student.Address, responseObject.Student.Address);
+        //    Assert.Equal(student.Pincode, responseObject.Student.Pincode);
 
 
     }
 }
 
+    //public class StudentApiResponse
+    //{
+    //    public string Message { get; set; }
+    //    public Student Student { get; set; }
+    //}
 
-
-
-
+   
