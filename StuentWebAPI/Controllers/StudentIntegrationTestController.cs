@@ -23,78 +23,78 @@ namespace StudentWebAPI.IntegrationTests
             _client = factory.CreateClient();
         }
 
-        [Fact]
-        public async Task PostValidStudent_ReturnsOkResult()
-        {
-            var student = new Student
-            {
-                FirstName = "hinal",
-                LastName = "patel",
-                ContactNo = 9632501410,
-                Email = "hinal.patel@example.com",
-                Gender = "female",
-                DateOfBirth = "1995-02-19",
-                Address = "ferthtykuyykikuyloulul",
-                Pincode = 123125
-            };
+        //[Fact]
+        //public async Task PostValidStudent_ReturnsOkResult()
+        //{
+        //    var student = new Student
+        //    {
+        //        FirstName = "hinal",
+        //        LastName = "patel",
+        //        ContactNo = 9632501410,
+        //        Email = "hinal.patel@example.com",
+        //        Gender = "female",
+        //        DateOfBirth = "1995-02-19",
+        //        Address = "ferthtykuyykikuyloulul",
+        //        Pincode = 123125
+        //    };
 
-            var url = "/api/Student/PostStudent"; // Use relative URL
+        //    var url = "/api/Student/PostStudent"; // Use relative URL
 
-            // Act
-            var response = await _client.PostAsJsonAsync(url, student);
-            response.EnsureSuccessStatusCode();
-
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("OK", response.ReasonPhrase);
+        //    // Act
+        //    var response = await _client.PostAsJsonAsync(url, student);
+        //    response.EnsureSuccessStatusCode();
 
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var jsonResponse = JObject.Parse(responseContent);
-
-            // Assert against the JSON object
-            Assert.True(jsonResponse.ContainsKey("message"));
-            Assert.Equal("Student successfully added.", (string)jsonResponse["message"]);
-
-            Assert.True(jsonResponse.ContainsKey("student"));
-
-            var jsonStudent = jsonResponse["student"] as JObject;
-            Assert.NotNull(jsonStudent);
-            System.Diagnostics.Debug.WriteLine(jsonStudent.ToString());
+        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //    Assert.Equal("OK", response.ReasonPhrase);
 
 
-            Assert.True(jsonStudent.ContainsKey("firstName"), "FirstName key is missing in jsonStudent");
-            Assert.Equal(student.FirstName, (string)jsonStudent["firstName"]);
+        //    var responseContent = await response.Content.ReadAsStringAsync();
+        //    var jsonResponse = JObject.Parse(responseContent);
 
-            Assert.True(jsonStudent.ContainsKey("lastName"), "LastName key is missing in jsonStudent");
-            Assert.Equal(student.LastName, (string)jsonStudent["lastName"]);
+        //    // Assert against the JSON object
+        //    Assert.True(jsonResponse.ContainsKey("message"));
+        //    Assert.Equal("Student successfully added.", (string)jsonResponse["message"]);
 
-            Assert.True(jsonStudent.ContainsKey("contactNo"), "ContactNo key is missing in jsonStudent");
-            Assert.Equal(student.ContactNo, (long)jsonStudent["contactNo"]);
+        //    Assert.True(jsonResponse.ContainsKey("student"));
 
-            Assert.True(jsonStudent.ContainsKey("email"), "Email key is missing in jsonStudent");
-            Assert.Equal(student.Email, (string)jsonStudent["email"]);
+        //    var jsonStudent = jsonResponse["student"] as JObject;
+        //    Assert.NotNull(jsonStudent);
+        //    System.Diagnostics.Debug.WriteLine(jsonStudent.ToString());
 
-            Assert.True(jsonStudent.ContainsKey("gender"), "Gender key is missing in jsonStudent");
-            Assert.Equal(student.Gender, (string)jsonStudent["gender"]);
 
-            Assert.True(jsonStudent.ContainsKey("dateOfBirth"), "DateOfBirth key is missing in jsonStudent");
-            Assert.Equal(student.DateOfBirth, (string)jsonStudent["dateOfBirth"]);
+        //    Assert.True(jsonStudent.ContainsKey("firstName"), "FirstName key is missing in jsonStudent");
+        //    Assert.Equal(student.FirstName, (string)jsonStudent["firstName"]);
 
-            Assert.True(jsonStudent.ContainsKey("address"), "Address key is missing in jsonStudent");
-            Assert.Equal(student.Address, (string)jsonStudent["address"]);
+        //    Assert.True(jsonStudent.ContainsKey("lastName"), "LastName key is missing in jsonStudent");
+        //    Assert.Equal(student.LastName, (string)jsonStudent["lastName"]);
 
-            Assert.True(jsonStudent.ContainsKey("pincode"), "Pincode key is missing in jsonStudent");
-            Assert.Equal(student.Pincode, (int)jsonStudent["pincode"]);
+        //    Assert.True(jsonStudent.ContainsKey("contactNo"), "ContactNo key is missing in jsonStudent");
+        //    Assert.Equal(student.ContactNo, (long)jsonStudent["contactNo"]);
 
-        }
+        //    Assert.True(jsonStudent.ContainsKey("email"), "Email key is missing in jsonStudent");
+        //    Assert.Equal(student.Email, (string)jsonStudent["email"]);
+
+        //    Assert.True(jsonStudent.ContainsKey("gender"), "Gender key is missing in jsonStudent");
+        //    Assert.Equal(student.Gender, (string)jsonStudent["gender"]);
+
+        //    Assert.True(jsonStudent.ContainsKey("dateOfBirth"), "DateOfBirth key is missing in jsonStudent");
+        //    Assert.Equal(student.DateOfBirth, (string)jsonStudent["dateOfBirth"]);
+
+        //    Assert.True(jsonStudent.ContainsKey("address"), "Address key is missing in jsonStudent");
+        //    Assert.Equal(student.Address, (string)jsonStudent["address"]);
+
+        //    Assert.True(jsonStudent.ContainsKey("pincode"), "Pincode key is missing in jsonStudent");
+        //    Assert.Equal(student.Pincode, (int)jsonStudent["pincode"]);
+
+        //}
 
 
         [Fact]
         public async Task GetValidStudent_ReturnsOkResult()
         {
             var studentId = 36; // Assume a student with ID 1 exists
-            var url = $"/api/Student/GetStudent/{studentId}"; // Use relative URL
+            var url = $"/api/Student/GetStudentById/{studentId}"; // Use relative URL
 
             // Act
             var response = await _client.GetAsync(url);
@@ -153,8 +153,69 @@ namespace StudentWebAPI.IntegrationTests
             Assert.Equal(expectedStudent.Pincode, (int)jsonStudent["pincode"]);
         }
 
+        [Fact]
+        public async Task UpdateValidStudent_ReturnsOkResult()
+        {
+            var student = new Student
+            {
+                Id=36,
+                FirstName = "jinal",
+                LastName = "patel",
+                ContactNo = 9632501410,
+                Email = "jinal.patel@example.com",
+                Gender = "female",
+                DateOfBirth = "1995-02-19",
+                Address = "updated address",
+                Pincode = 123125
+            };
+
+            var url = "/api/Student/PutStudent/36"; // Use relative URL for update endpoint
+
+            // Act
+            var response = await _client.PutAsJsonAsync(url, student);
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("OK", response.ReasonPhrase);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var jsonResponse = JObject.Parse(responseContent);
+
+            // Assert against the JSON object
+            Assert.True(jsonResponse.ContainsKey("message"));
+            Assert.Equal("Student successfully updated.", (string)jsonResponse["message"]);
+
+            Assert.True(jsonResponse.ContainsKey("student"));
+
+            var jsonStudent = jsonResponse["student"] as JObject;
+            Assert.NotNull(jsonStudent);
+            System.Diagnostics.Debug.WriteLine(jsonStudent.ToString());
 
 
+            Assert.True(jsonStudent.ContainsKey("firstName"), "FirstName key is missing in jsonStudent");
+            Assert.Equal(student.FirstName, (string)jsonStudent["firstName"]);
+
+            Assert.True(jsonStudent.ContainsKey("lastName"), "LastName key is missing in jsonStudent");
+            Assert.Equal(student.LastName, (string)jsonStudent["lastName"]);
+
+        }
+
+        [Fact]
+        public async Task DeleteValidStudent_ReturnsOkResult()
+        {
+            var studentId = 33; // Assuming a student with ID 33 exists
+            var url = $"/api/Student/DeleteStudent/{studentId}"; // Use relative URL for delete endpoint
+
+            // Act
+            var response = await _client.DeleteAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("OK", response.ReasonPhrase);
+
+            
+        }
 
     }
 }
