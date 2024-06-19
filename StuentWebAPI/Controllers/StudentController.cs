@@ -58,7 +58,7 @@ namespace StudentWebAPI.Controllers
                 return NotFound("No students found.");
             }
 
-            return Ok(new { Message = "Students found", Students = student });
+            return Ok(new { Message = "Students found", Student = student });
         }
 
         // POST: api/PostStudent
